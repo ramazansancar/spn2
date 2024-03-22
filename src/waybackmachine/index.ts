@@ -8,9 +8,9 @@ export interface SavePageNowOptions {
     delayWBAvailability?: boolean;
     forceGet?: boolean;
     skipFirstArchive?: boolean;
-    ifNotArchivedWithin?: number|string;
-    ifNotArchivedWithinBetween?: string[];
-    outlinks_availability?: boolean;
+    ifNotArchivedWithin?: string;
+    ifNotArchivedWithinBetween?: number[]|string[];
+    outlinksAvailability?: boolean;
     emailResults?: boolean;
     captureExternalCookies?: string;
     captureExternalUserAgent?: string;
@@ -62,7 +62,6 @@ export default class SPN2Client {
      * @param accessKey Your access key (https://archive.org/account/s3.php)
      * @param secretKey Your secret key (https://archive.org/account/s3.php)
      * @returns SPN2Client
-     * 
     */
     constructor(accessKey:string, secretKey:string) {
         this.accessKey = accessKey;
@@ -83,8 +82,8 @@ export default class SPN2Client {
                     resolve(false);
                 }
             } catch (error) {
-                console.error(error);
                 reject(false);
+                console.error(error);
             }
         });
     };
@@ -109,12 +108,9 @@ export default class SPN2Client {
     async savePageRequest(url: string, opt: SavePageNowRequestOptions) {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log(`savePageRequest Opt:`,opt);
                 await fetch(constant.API_URL, opt)
                 .then(async (res: any) => {
-                    console.log(`savePageRequest Response1:`,res);
                     var data = await res.json();
-                    console.log(`savePageRequest Response2:`,data);
                     resolve({
                         url: data?.url,
                         job_id: data?.job_id,
@@ -130,13 +126,16 @@ export default class SPN2Client {
     }
 
     public async savePageNow(options: SavePageNowOptions) {
+        
         const captureAll = await this.booleanParser(options.captureAll || false);
         const captureOutlinks = await this.booleanParser(options.captureOutlinks || false);
         const captureScreenshot = await this.booleanParser(options.captureScreenshot || false);
         const delayWBAvailability = await this.booleanParser(options.delayWBAvailability || false);
         const forceGet = await this.booleanParser(options.forceGet || false);
         const skipFirstArchive = await this.booleanParser(options.skipFirstArchive || false);
-        const outlinks_availability = await this.booleanParser(options.outlinks_availability || false);
+        const ifNotArchivedWithinBetween = options.ifNotArchivedWithinBetween || undefined;
+        const ifNotArchivedWithin = options.ifNotArchivedWithin || undefined;
+        const outlinksAvailability = await this.booleanParser(options.outlinksAvailability || false);
         const emailResults = await this.booleanParser(options.emailResults || false);
         const captureExternalCookies = options.captureExternalCookies || undefined;
         const captureExternalUserAgent = options.captureExternalUserAgent || undefined;
@@ -151,25 +150,59 @@ export default class SPN2Client {
 
         requestOptions.headers = {
             ...constant.API_HEADERS,
-            Authorization: `LOW ${this.accessKey}:${this.secretKey}`
+            authorization: `LOW ${this.accessKey}:${this.secretKey}`
         };
 
-        requestOptions.body = {
-            url: options.url,
-            capture_all: captureAll,
-            capture_outlinks: captureOutlinks,
-            capture_screenshot: captureScreenshot,
-            delay_wb_availability: delayWBAvailability,
-            force_get: forceGet,
-            skip_first_archive: skipFirstArchive,
-            if_not_archived_within: options.ifNotArchivedWithin,
-            outlinks_availability: outlinks_availability,
-            email_result: emailResults,
-            capture_cookie: captureExternalCookies,
-            use_user_agent: captureExternalUserAgent,
-            target_username: captureTargetAuthorizations.username,
-            target_password: captureTargetAuthorizations.password
-        };
+        const urlencodedBody = new URLSearchParams();
+
+        urlencodedBody.append("url", options.url);
+
+        if(captureAll) {
+            urlencodedBody.append("capture_all", captureAll || '0');
+        }
+        if(captureOutlinks) {
+            urlencodedBody.append("capture_outlinks", captureOutlinks || '0');
+        }
+        if(captureScreenshot) {
+            urlencodedBody.append("capture_screenshot", captureScreenshot || '0');
+        }
+        if(delayWBAvailability) {
+            urlencodedBody.append("delay_wb_availability", delayWBAvailability || '0');
+        }
+        if(forceGet) {
+            urlencodedBody.append("force_get", forceGet || '0');
+        }
+        if(skipFirstArchive) {
+            urlencodedBody.append("skip_first_archive", skipFirstArchive || '0');
+        }
+        if(ifNotArchivedWithinBetween) {
+            if(Array.isArray(options.ifNotArchivedWithinBetween)) {
+                urlencodedBody.append("if_not_archived_within", ifNotArchivedWithinBetween.join(',') as string);
+            }
+        }else{
+            if(ifNotArchivedWithin) {
+                urlencodedBody.append("if_not_archived_within", ifNotArchivedWithin || '');
+            }
+        }
+        if(outlinksAvailability) {
+            urlencodedBody.append("outlinks_availability", outlinksAvailability || '0');
+        }
+        if(emailResults) {
+            urlencodedBody.append("email_result", emailResults || '0');
+        }
+        if(captureExternalCookies) {
+            urlencodedBody.append("capture_cookie", captureExternalCookies || '');
+        }
+        if(captureExternalUserAgent) {
+            urlencodedBody.append("use_user_agent", captureExternalUserAgent || '');
+        }
+        if(captureTargetAuthorizations) {
+            urlencodedBody.append("target_username", captureTargetAuthorizations?.username || '');
+            urlencodedBody.append("target_password", captureTargetAuthorizations?.password || '');
+        }
+
+        requestOptions.body = urlencodedBody;
+
         if(await this.checkUrl(options.url)) {
             return await this.savePageRequest(constant.API_URL, requestOptions);
         }else{

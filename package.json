@@ -1,0 +1,53 @@
+{
+  "name": "spn2",
+  "description": "The SPN2 JS Library provides an easy-to-use interface to interact with the Save Page Now 2 (SPN2) API, which is part of the Internet Archive's Wayback Machine service.",
+  "homepage": "https://github.com/ramazansancar/spn2",
+  "version": "1.0.0",
+  "author": "ramazansancar",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ramazansancar/spn2"
+  },
+  "funding": [
+    {
+      "url": "https://github.com/sponsors/ramazansancar"
+    }
+  ],
+  "main": "index.ts",
+  "scripts": {
+    "start": "npx ts-node index.ts",
+    "test": "node test.ts"
+  },
+  "type": "module",
+  "files": [
+    "src/waybackmachine/contants.ts",
+    "src/waybackmachine/index.ts",
+    "index.ts",
+    "test.ts",
+    "README.md",
+    "LICENSE",
+    "tsconfig.json"
+  ],
+  "keywords": [
+    "spn2",
+    "wayback",
+    "waybackmachine",
+    "waybackmachine-api",
+    "waybackmachine-api-nodejs",
+    "savepagenow",
+    "savepagenow-api",
+    "savepagenow-api-nodejs",
+    "save-page-now",
+    "save-page-now-api",
+    "save-page-now-api-nodejs",
+    "nodejs",
+    "ts"
+  ],
+  "dependencies": {
+    
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

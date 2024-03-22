@@ -1,6 +1,6 @@
 import SPN2Client from './index';
 
-const client = new SPN2Client('9Jk7NiaFIzCr1IGw','CQx2ezTt7jjZh8xG');
+const client = new SPN2Client('[ACCESS KEY]','[SECRET KEY]');
 
 (async () => {
     await client.savePageNow({

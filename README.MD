@@ -3,6 +3,7 @@
 The SPN2 JS Library provides an easy-to-use interface to interact with the Save Page Now 2 (SPN2) API, which is part of the Internet Archive's Wayback Machine service.
 
 API Docs Source: [Google Docs](https://docs.google.com/document/d/1Nsv52MvSjbLb2PCpHlat0gkzw0EvtSgpKHu4mk0MnrA/view)
+API Change Log: [Google Docs](https://docs.google.com/document/d/19RJsRncGUw2qHqGGg9lqYZYf7KKXMDL1Mro5o1Qw6QI/view)
 
 ## Installation
 

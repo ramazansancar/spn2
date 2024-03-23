@@ -1,9 +1,10 @@
 import SPN2Client from './index';
+import env from './env';
 
 // Create a new instance of SPN2Client
-// Set the accessKey and secretKey to empty string
+// You can get your ACCESS_KEY and SECRET_KEY from your account on archive.org
 // Check here: https://archive.org/account/s3.php
-const client = new SPN2Client('ACCESS_KEY', 'SECRET_KEY');
+const client = new SPN2Client(env.ACCESS_KEY, env.SECRET_KEY);
 
 (async () => {
     await client.savePageNow({
@@ -11,9 +12,12 @@ const client = new SPN2Client('ACCESS_KEY', 'SECRET_KEY');
         captureAll: true,
         captureOutlinks: true,
         captureScreenshot: true,
-        /*delayWBAvalability: true,
+        /*
+        delayWBAvalability: true,
         forceGet: true,
         skipFirstArchive: true,
+        ifNotArchivedWithinBetween: ["1h","5h"],
+        ifNotArchivedWithin: 1h,
         outlinks_availability: true,
         emailResults: true,
         captureExternalCookies: 'test',
@@ -21,16 +25,22 @@ const client = new SPN2Client('ACCESS_KEY', 'SECRET_KEY');
         captureTargetAuthorizations: {
             username: 'test',
             password: 'test'
-        }*/
-    }).then((res: any) => {
-        console.log(res);
-        return {
-            url: res?.url,
-            job_id: res?.job_id,
-            message: res?.message,
-            status: res?.status,
-            status_ext: res?.status_ext
-        };
+        }
+        */
+    }).then((res: object) => {
+        console.log(`client.savePageNow():`,res);
+    });
+
+    await client.savePageNowStatus('spn2-f1500ef4caff2c81b98feff1e3bfcb762255950b').then((res: object) => {
+        console.log(`client.savePageNowStatus('spn2-f1500e'):`,res);
+    });
+
+    await client.systemStatus().then((res: object) => {
+        console.log(`client.systemStatus():`,res);
+    });
+
+    await client.userStatus().then((res: object) => {
+        console.log(`client.userStatus():`,res);
     });
 })();
 
